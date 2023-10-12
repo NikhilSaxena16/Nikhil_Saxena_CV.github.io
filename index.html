@@ -370,7 +370,7 @@
                         <h1 class="title pb-3 mb-5">Contact Me</h1>
                         <p class="mb-4">If you prefer, you can also send me a message directly using the contact form below. Please provide your name, email address, contact number, and a brief message, and I will get back to you as soon as possible.</p>
                         <!-- <form id="contactForm"> -->
-                            <form  id="contactForm">
+                            <form id="contactForm">
                                 <div class="row g-3">
                                   <div class="col-md-6">
                                     <div class="form-floating">
@@ -397,10 +397,12 @@
                                     </div>
                                   </div>
                                   <div class="col-12">
-                                    <button class="btn btn-primary w-100 py-3" type="button" onclick="SendEmail()" >Send Message</button>
+                                    <button class="btn btn-primary w-100 py-3" type="button" onclick="SendEmail()">Send Message</button>
                                   </div>
                                 </div>
                               </form>
+                              <!-- Custom alert box -->
+                              <div id="custom-alert" class="custom-alert"></div>
                     </section>
                     
                     <!-- Contact End -->
@@ -442,66 +444,73 @@
 
 
 <script>
-    function SendEmail(){
-
-let name =document.getElementById("name").value;
-let email =document.getElementById("email").value;
-let contact =document.getElementById("contact").value;
-let message =document.getElementById("message").value;
-
-   // Check if any field is blank
-   if (!name || !email || !contact || !message) {
-            alert("Please fill all blank fields.");
-            return; // Stop execution if any field is blank
+    function showCustomAlert(message, type) {
+      const customAlert = document.getElementById('custom-alert');
+      customAlert.textContent = message;
+      customAlert.className = `custom-alert show ${type}`;
+      setTimeout(() => {
+        customAlert.className = 'custom-alert';
+      }, 1000); // Hide the alert after 1 second
+    }
+  
+    function clearForm() {
+      document.getElementById("name").value = '';
+      document.getElementById("email").value = '';
+      document.getElementById("contact").value = '';
+      document.getElementById("message").value = '';
+    }
+  
+    function SendEmail() {
+      let name = document.getElementById("name").value;
+      let email = document.getElementById("email").value;
+      let contact = document.getElementById("contact").value;
+      let message = document.getElementById("message").value;
+  
+      if (!name || !email || !contact || !message) {
+        alert("Please fill all required fields.");
+        return;
+      }
+  
+      if (contact.length < 6) {
+        alert("Contact number should have at least 6 digits.");
+        return;
+      }
+  
+      let body = "Name: " + name + "<br/> Email: " + email + "<br/> Contact: " + contact + "<br/> Message: " + message;
+  
+      Email.send({
+        SecureToken: "fac3bbc6-eafd-4ee6-935d-1984ca877018",
+        To: 'saxenans566@gmail.com',
+        From: 'saxenans566@gmail.com',
+        Subject: "Mail from Nikhil Portfolio",
+        Body: body
+      }).then(message => {
+        showCustomAlert("Form has been successfully submitted!!!");
+        clearForm();
+      });
+    }
+  
+    $(document).ready(function () {
+      $('#contact').on('input', function () {
+        var mobileNumber = $(this).val();
+        var isValidNumber = /^[6-9]\d{9}$/.test(mobileNumber);
+  
+        if (mobileNumber.length < 6 || !isValidNumber) {
+          $(this).removeClass('is-valid').addClass('is-invalid');
+          $(this).siblings('.invalid-feedback').show();
+        } else {
+          $(this).removeClass('is-invalid').addClass('is-valid');
+          $(this).siblings('.invalid-feedback').hide();
         }
-
-           // Check if contact number has at least 6 digits
-           if (contact.length < 6) {
-            alert("Contact number should have at least 6 digits.");
-            return;
-        }
-
-let body = "Name:" + name + "<br/> Email:" + email + "<br/> Contact:" + contact + "<br/> Message:" + message;
-
-
-
-Email.send({
-SecureToken : "fac3bbc6-eafd-4ee6-935d-1984ca877018",
-         To : 'saxenans566@gmail.com',
-       From : 'saxenans566@gmail.com',
-    Subject : "Mail from Nikhil Portfolio",
-       Body : body
-}).then(message => {
-    alert(message);
-    location.reload();
-});
-}
-
-$(document).ready(function () {
-        // Mobile number validation
-        $('#contact').on('input', function () {
-            var mobileNumber = $(this).val();
-            var isValidNumber = /^[6-9]\d{9}$/.test(mobileNumber);
-
-            if (mobileNumber.length < 6 || !isValidNumber) {
-                $(this).removeClass('is-valid').addClass('is-invalid');
-                $(this).siblings('.invalid-feedback').show();
-            } else {
-                $(this).removeClass('is-invalid').addClass('is-valid');
-                $(this).siblings('.invalid-feedback').hide();
-            }
-        });
-    });
-
-    // Get the input element
-    var contactInput = document.getElementById("contact");
-
-    // Add an event listener for input
-    contactInput.addEventListener("input", function () {
-        // Remove any non-numeric characters using a regular expression
+      });
+  
+      var contactInput = document.getElementById("contact");
+      contactInput.addEventListener("input", function () {
         this.value = this.value.replace(/[^0-9]/g, "");
+      });
     });
-</script>
+  </script>
+  
 
 
     
